@@ -3,7 +3,7 @@
 # SCRIPT : DOWNLOAD AND INSTALL E2IPLAYER_TSiplayer
 # ###########################################
 #
-# Command: wget -q "--no-check-certificate" https://raw.githubusercontent.com/emil237/E2IPLAYER_TSiplayer/main/e2iplayer.sh -O - | /bin/sh
+# Command: wget -q "--no-check-certificate" https://raw.githubusercontent.com/abo-barby/E2IPLAYER_TSiplayer/main/e2iplayer.sh -O - | /bin/sh
 #
 # ###########################################
 versions="01.09.2022"
@@ -12,7 +12,7 @@ versions="01.09.2022"
 TMPDIR='/tmp'
 PLUGINPATH='/usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer'
 SETTINGS='/etc/enigma2/settings'
-URL='https://raw.githubusercontent.com/emil237/E2IPLAYER_TSiplayer/main'
+URL='https://raw.githubusercontent.com/abo-barby/E2IPLAYER_TSiplayer/main'
 #PYTHON_VERSION=$(python -c"import sys; print(sys.hexversion)")
 PYTHON_VERSION=$(python -c"import platform; print(platform.python_version())")
 # FILE=/usr/lib/enigma2/python/Components/
