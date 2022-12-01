@@ -3,24 +3,24 @@
 # SCRIPT : DOWNLOAD AND INSTALL E2IPLAYER_TSiplayer
 # ###########################################
 #
-# Command: wget -q "--no-check-certificate" https://raw.githubusercontent.com/abo-barby/E2IPLAYER_TSiplayer/main/e2iplayer.sh -O - | /bin/sh
+# Command: wget -q "--no-check-certificate" https://raw.githubusercontent.com/emil237/E2IPLAYER_TSiplayer/main/e2iplayer.sh -O - | /bin/sh
 #
 # ###########################################
-versions="01.09.2022"
+versions="30.11.2022"
 ###########################################
 # Configure where we can find things here #
 TMPDIR='/tmp'
 PLUGINPATH='/usr/lib/enigma2/python/Plugins/Extensions/IPTVPlayer'
 SETTINGS='/etc/enigma2/settings'
-URL='https://raw.githubusercontent.com/abo-barby/E2IPLAYER_TSiplayer/main'
+URL='https://raw.githubusercontent.com/emil237/E2IPLAYER_TSiplayer/main'
 #PYTHON_VERSION=$(python -c"import sys; print(sys.hexversion)")
 PYTHON_VERSION=$(python -c"import platform; print(platform.python_version())")
 # FILE=/usr/lib/enigma2/python/Components/
 # PY=Input.pyc
 # SPA=/usr/bin/OpenSPA.info
-
 #########################
-VERSION=VERSION=$(wget $MY_URL/version -qO- | cut -d "=" -f2-)
+VERSION=$(wget $URL/version -qO- | cut -d "=" -f2- | sed 's/^"\(.*\)".*/\1/')
+
 ########################
 if [ -f /etc/opkg/opkg.conf ]; then
     STATUS='/var/lib/opkg/status'
@@ -47,6 +47,10 @@ elif [ "$PYTHON_VERSION" == 3.10.4 ]; then
     echo ":You have $PYTHON_VERSION image ..."
     PLUGINPY4='E2IPLAYER_TSiplayer-PYTHON310.tar.gz'
     rm -rf ${TMPDIR}/"${PLUGINPY4:?}"
+elif [ "$PYTHON_VERSION" == 3.11.0 ]; then
+    echo ":You have $PYTHON_VERSION image ..."
+    PLUGINPY5='E2IPLAYER_TSiplayer-PYTHON311.tar.gz'
+    rm -rf ${TMPDIR}/"${PLUGINPY5:?}"    
 else
     echo ":You have $PYTHON_VERSION image ..."
     PLUGINPY2='E2IPLAYER_TSiplayer.tar.gz'
@@ -67,6 +71,7 @@ rm -rf /etc/enigma2/iptvplaye*.json
 rm -rf /etc/tsiplayer_xtream.conf
 rm -rf /iptvplayer_rootfs
 rm -rf /usr/lib/enigma2/python/Components/Input.py
+rm -rf /usr/bin/lsdir
 
 #########################
 install() {
@@ -89,12 +94,12 @@ install() {
 }
 
 #########################
-if [ "$PYTHON_VERSION" == 3.9.9 -o "$PYTHON_VERSION" == 3.9.7 -o "$PYTHON_VERSION" == 3.8.5 ] || [ "$PYTHON_VERSION" == 3.10.4 ]; then
-    for i in duktape wget python3-sqlite3; do
+if [ "$PYTHON_VERSION" == 3.9.9 -o "$PYTHON_VERSION" == 3.9.7 -o "$PYTHON_VERSION" == 3.8.5 ] || [ "$PYTHON_VERSION" == 3.10.4 ] || [ "$PYTHON_VERSION" == 3.11.0 ]; then
+    for i in enigma2-plugin-systemplugins-serviceapp ffmpeg gstplayer duktape wget python3-sqlite3; do
         install $i
     done
 else
-    for i in duktape wget python-sqlite3; do
+    for i in enigma2-plugin-systemplugins-serviceapp ffmpeg gstplayer duktape hlsdl wget python-sqlite3; do
         install $i
     done
 fi
@@ -103,44 +108,39 @@ fi
 clear
 
 if [ "$PYTHON_VERSION" == 3.9.9 -o "$PYTHON_VERSION" == 3.9.7 ]; then
-    #set -e
     echo "Downloading And Insallling IPTVPlayer-$PYTHON_VERSION plugin Please Wait ......"
     echo
     wget --show-progress $URL/$PLUGINPY3 -qP $TMPDIR
-    tar -xzf $TMPDIR/$PLUGINPY3 --warning=no-timestamp -C /
-    # if [ -f "$SPA" ]; then
-    #     cd $FILE
-    #     rm $PY
-    # fi     
-    #set +e
+    tar -xzf $TMPDIR/$PLUGINPY3 -C /
 elif [ "$PYTHON_VERSION" == 3.8.5 ]; then
-    #set -e
     echo "Downloading And Insallling IPTVPlayer-$PYTHON_VERSION plugin Please Wait ......"
     echo
     wget --show-progress $URL/$PLUGINPY5 -qP $TMPDIR
-    tar -xzf $TMPDIR/$PLUGINPY5 --warning=no-timestamp -C /    
+    tar -xzf $TMPDIR/$PLUGINPY5 -C /    
 elif [ "$PYTHON_VERSION" == 3.10.4 ]; then
-    #set -e
     echo "Downloading And Insallling IPTVPlayer-$PYTHON_VERSION plugin Please Wait ......"
     echo
     wget --show-progress $URL/$PLUGINPY4 -qP $TMPDIR
-    tar -xzf $TMPDIR/$PLUGINPY4 --warning=no-timestamp -C /
-    #set +e
+    tar -xzf $TMPDIR/$PLUGINPY4 -C /
+elif [ "$PYTHON_VERSION" == 3.11.0 ]; then
+    echo "Downloading And Insallling IPTVPlayer-$PYTHON_VERSION plugin Please Wait ......"
+    echo
+    wget --show-progress $URL/$PLUGINPY5 -qP $TMPDIR
+    tar -xzf $TMPDIR/$PLUGINPY5 -C /    
 else
-    #set -e
     echo "Downloading And Insallling IPTVPlayer-$PYTHON_VERSION plugin Please Wait ......"
     echo
     wget --show-progress $URL/$PLUGINPY2 -qP $TMPDIR
-    tar -xzf $TMPDIR/$PLUGINPY2 --warning=no-timestamp -C /
-    #set +e
+    tar -xzf $TMPDIR/$PLUGINPY2 -C /
 fi
 
 #########################
 if [ -d $PLUGINPATH ]; then
     echo ":Your Device IS $(uname -m) processor ..."
     echo "Add Setting To ${SETTINGS} ..."
+    sleep 5
     init 4
-    sleep 2
+    #sleep 2
     sed -e s/config.plugins.iptvplayer.*//g -i ${SETTINGS}
     sleep 1
     {
@@ -167,6 +167,8 @@ elif [ "$PYTHON_VERSION" == 3.8.5 ]; then
     rm -rf ${TMPDIR}/"${PLUGINPY5:?}"    
 elif [ "$PYTHON_VERSION" == 3.10.4 ]; then
     rm -rf ${TMPDIR}/"${PLUGINPY4:?}"
+elif [ "$PYTHON_VERSION" == 3.11.0 ]; then
+    rm -rf ${TMPDIR}/"${PLUGINPY5:?}"    
 else
     rm -rf ${TMPDIR}/"${PLUGINPY2:?}"
 fi
@@ -183,8 +185,7 @@ if [ $OSTYPE = "DreamOS" ]; then
     sleep 2
     systemctl restart enigma2
 else
-    enit 4
-   sleep ;4
     init 3
 fi
 exit 0
+
